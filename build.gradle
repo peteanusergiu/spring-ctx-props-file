@@ -14,7 +14,47 @@ dependencies{
 
 // Pass all system properties to Test JVM, see:
 // http://forums.gradle.org/gradle/topics/how_should_i_be_handling_passing_system_properties_from_gradle_to_my_tests
-test{
-  systemProperties = System.getProperties()
-  systemProperties['foo'] = 'bar'
+
+tasks.withType(Test) {
+  systemProperties = [
+  	'http.proxyHost': System.properties['http.proxyHost'],
+	'http.proxyPort': System.properties['http.proxyPort'],
+  	// correct either with '' or without 
+  	//'SYSTEM_VAR_systemProperties_map_value' : 'SYSTEM_VAR_systemProperties_map_VALUE',
+  	SYSTEM_VAR_systemProperties_map_value : 'SYSTEM_VAR_systemProperties_map_VALUE',
+  	SYSTEM_VAR_systemProperties_map_sysProp : System.getProperty('SYSTEM_VAR_systemProperties_map', 'SYSTEM_VAR_systemProperties_map_VALUE')
+  	]
+  	if (System.properties['https.proxyHost']) {
+  		//put version
+  		systemProperties.put 'https.proxyHost', System.properties['https.proxyHost']
+  		systemProperty 'https.proxyPort', System.properties['https.proxyPort']
+  }
+}
+test {
+  //systemProperties = System.getProperties()
+  
+  systemProperties['SYSTEM_VAR_systemProperties'] = 'SYSTEM_VAR_systemProperties_VALUE'
+  	
+  systemProperty 'SYSTEM_VAR_systemProperty', 'SYSTEM_VAR_systemProperty_VALUE'
+  
+  systemProperty 'gradleProp', System.properties['gradleProp']
+  
+  println 'System.properties are : ' + systemProperties
+}
+
+task printProps << {
+    //println systemProjectProp
+    //println commandLineProjectProp
+    //somehow not working with env var ORG_GRADLE_PROJECT_vProjectenProp WHY?
+    //println envProjectProp
+    println System.properties['systemFromGradleProperties']
+    println System.properties['systemFromCommandParam']
+    println System.properties['systemFrom.CommandParam']
+    println System.properties['http.proxyHost']
+    
+    //println system
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
 }

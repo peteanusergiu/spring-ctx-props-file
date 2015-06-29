@@ -11,9 +11,9 @@
 
     <context:annotation-config/>
 
-    <context:property-placeholder location="file:///${location}"/>
+    <context:property-placeholder location="file:app.properties"/>
 
-    <util:properties id="appProperties" location="file:///${location}"/>
+    <util:properties id="appProperties" location="file:app.properties"/>
 
     <beans:bean id="valueHolder" class="ValueHolder">
         <beans:property name="value" value="${prop.example}"/>
