@@ -15,7 +15,12 @@ dependencies{
 // Pass all system properties to Test JVM, see:
 // http://forums.gradle.org/gradle/topics/how_should_i_be_handling_passing_system_properties_from_gradle_to_my_tests
 
+/*if multiple task have a TEST type this is an elegant way of affecting all of them*/
 tasks.withType(Test) {
+  //one can import all existing properties
+  //systemProperties = System.getProperties()
+  
+  //using a map style - replaces all already existing properties  
   systemProperties = [
   	'http.proxyHost': System.properties['http.proxyHost'],
 	'http.proxyPort': System.properties['http.proxyPort'],
@@ -24,20 +29,23 @@ tasks.withType(Test) {
   	SYSTEM_VAR_systemProperties_map_value : 'SYSTEM_VAR_systemProperties_map_VALUE',
   	SYSTEM_VAR_systemProperties_map_sysProp : System.getProperty('SYSTEM_VAR_systemProperties_map', 'SYSTEM_VAR_systemProperties_map_VALUE')
   	]
+  	//we are talking about Grovy so conditional logic can be applied
   	if (System.properties['https.proxyHost']) {
-  		//put version
+  		//using a map.put style - appends a property to the already existing list
   		systemProperties.put 'https.proxyHost', System.properties['https.proxyHost']
+  		//using a systemProperty style on an existing system property(either in -D argument list or gradle.properties)- appends a property to the already existing list
   		systemProperty 'https.proxyPort', System.properties['https.proxyPort']
   }
 }
 test {
-  //systemProperties = System.getProperties()
+  //using a systemProperty style on an existing system property(either in -D argument list or gradle.properties)- appends a property to the already existing list
+  systemProperty 'gradleProp', System.properties['gradleProp']
   
+  //using a systemProperties style on a literal value (new property)- appends a property to the already existing list
   systemProperties['SYSTEM_VAR_systemProperties'] = 'SYSTEM_VAR_systemProperties_VALUE'
   	
+  //using a systemProperty style on a literal value (new property)- appends a property to the already existing list
   systemProperty 'SYSTEM_VAR_systemProperty', 'SYSTEM_VAR_systemProperty_VALUE'
-  
-  systemProperty 'gradleProp', System.properties['gradleProp']
   
   println 'System.properties are : ' + systemProperties
 }

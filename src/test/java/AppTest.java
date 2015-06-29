@@ -12,19 +12,41 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AppTest {
 
+	/*using spring techniques/objects to obtain access to project and system specific variables*/
+	
+	/*using appProperties for getting access to app.properties defined variables*/
     @Value("#{appProperties['prop.example']}")
     private String exampleProperty;
 
+    /*using systemProperties for getting access to SYSTEM ENV defined variables*/
     @Value("#{systemProperties['gradleProp']?: 'gradlePropDefault'}")
     private String systemProperty;
 
+    /*using a bean & dependency injection for accessing a variable defined in app-context.xml file*/
     @Autowired
     private ValueHolder valueHolder;
+    
+/*---------------------------------------------------------------------------------------------------------
+    Examples proving how to use Spring techniques for sending parameters/variables to test JVM 
+-----------------------------------------------------------------------------------------------------------*/
+    @Test
+    public void testValueHolder() throws Exception {
+        assertEquals("Hello world!", valueHolder.getValue());
+    }
+    
+    @Test
+    public void testExampleProp() {
+        assertEquals("Hello world!", exampleProperty);
+    }
 
+/*---------------------------------------------------------------------------------------------------------
+    Examples proving how to transmit parameters from Gradle's BUILD JVM to TEST JVM
+    (we are talking about 2 separate processes each one with it's own environment therefore in order to "share" 
+    any parameters gradle has to send them, one by one, or, not recommended, all of them) 
+-----------------------------------------------------------------------------------------------------------*/
     @Test
     public void testAllSystemProperties(){
         assertNotNull(System.getProperties());
-//        System.out.println(System.getProperties());
     }
     
     @Test
@@ -57,13 +79,4 @@ public class AppTest {
     	assertEquals("gradlePropValue", systemProperty);
     }
 
-    @Test
-    public void testValueHolder() throws Exception {
-        assertEquals("Hello world!", valueHolder.getValue());
-    }
-
-    @Test
-    public void testExampleProp() {
-        assertEquals("Hello world!", exampleProperty);
-    }
 }
